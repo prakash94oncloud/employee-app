@@ -1,5 +1,7 @@
 package com.example.demo.web;
 
+import com.example.demo.EmployeeAppApplication;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +28,15 @@ public class EmployeeController {
 
 	@Autowired
 	private IEmployeeService employeeService;
-	
+
 	@GetMapping("/hello")
 	public ResponseEntity<List<String>> get(){
 		List<String> list = new ArrayList<>();
 		list.add("Hello World");
+		list.add("InstanceId="+EmployeeAppApplication.getProp("instanceId"));
+		list.add("Private IP="+EmployeeAppApplication.getProp("privateIP"));
+		list.add("Public IP="+EmployeeAppApplication.getProp("publicIP"));
+
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
