@@ -1,0 +1,3 @@
+- hosts: slave
+  roles:
+  - kube_worker_aws

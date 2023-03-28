@@ -1,0 +1,42 @@
+- name: Create security group
+  ec2_group:
+    name: "{{ project_name }}_security_group"
+    description: "{{ project_name }} security group"
+    region: "{{ region }}"
+    rules:
+      - proto: all 
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+  register: test_firewall
+
+- name: Create an EC2 key
+  ec2_key:
+    name: "{{ project_name }}-{{ env }}-key"
+    region: "{{ region }}"
+  register: ec2_key
+
+- name: Save private key
+  copy: content="{{ ec2_key.key.private_key }}" dest="../aws-private.pem" mode=0600
+  when: ec2_key.changed
+
+- name: Create an EC2 instance
+  ec2_instance:
+    key_name: "{{ project_name }}-{{ env }}-key"
+    region: "{{ region }}"
+    security_group: "{{ test_firewall.group_id }}"
+    instance_type: "{{ instance_type }}"
+    image_id: "{{ ami }}"
+    wait: yes
+#    instance_tags:
+#        env: "{{ env }}"
+#    count_tag: env
+    count: 6
+    tags:  
+     foo: bar
+#    vpc_subnet_id: "{{ vpc.vpc.id }}" 
+#    assign_public_ip: yes
+  register: ec2
+
+
